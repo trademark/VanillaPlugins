@@ -1,0 +1,5 @@
+Apache MUST have READ access to zipsearch.zip and it MUST be 
+uploaded into the plugin's folder with the main plugin file.
+
+PHP's Zip library is required for automatic install via zip. 
+Otherwise, manually import the SQL file inside.
