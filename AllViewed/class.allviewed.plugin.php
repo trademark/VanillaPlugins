@@ -28,11 +28,11 @@ class AllVieiwedPlugin extends Gdn_Plugin {
    }
    
    /**
-    * Modify UnreadCommentCount to account for DateAllViewed
+    * Modify CountUnreadComments to account for DateAllViewed
     *
     * Required in DiscussionModel->Get() just before the return:
     *    $this->EventArguments['Data'] = $Data;
-    *    FireEvent('AfterAddColumns');
+    *    $this->FireEvent('AfterAddColumns');
     * @link http://vanillaforums.org/discussion/13227
     */
    function DiscussionModel_AfterAddColumns_Handler(&$Sender) {
