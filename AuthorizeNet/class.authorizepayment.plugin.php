@@ -19,7 +19,7 @@ $PluginInfo['AuthorizeNet'] = array(
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://tmprod.com',
-   'License' => 'GNU GPLv3'
+   'License' => 'GNU GPLv2'
 );
 
 Gdn_LibraryMap::SafeCache('library','class.paymentmodel.php',dirname(__FILE__).DS.'models/class.paymentmodel.php');

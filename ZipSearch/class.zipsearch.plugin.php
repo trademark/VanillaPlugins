@@ -20,7 +20,7 @@ $PluginInfo['ZipSearch'] = array(
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://tmprod.com',
-   'License' => 'GNU GPLv3'
+   'License' => 'GNU GPLv2'
 );
 
 // $Units data member

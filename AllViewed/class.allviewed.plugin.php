@@ -3,7 +3,7 @@
 
 // Define the plugin:
 $PluginInfo['AllVieiwed'] = array(
-   'Name' => 'AllVieiwed',
+   'Name' => 'AllViewed',
    'Description' => '',
    'Version' => '1.0a',
    'RequiredApplications' => FALSE,
@@ -14,12 +14,75 @@ $PluginInfo['AllVieiwed'] = array(
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://www.tmprod.com/web-development/vanilla.php',
-   'License' => 'GNU GPLv3'
+   'License' => 'GNU GPLv2'
 );
 
 class AllVieiwedPlugin extends Gdn_Plugin {
    
+   /**
+    * Allows user to mark all discussions as viewed.
+    */
+   function DiscussionsController_MarkAllViewed_Create(&$Sender) {
+      $UserModel = Gdn::UserModel();
+      $UserModel->UpdateAllViewed();
+      
+      $Sender->RedirectUrl = Url('discussions');
+      $Sender->StatusMessage = T('All discussed marked as viewed.');
+      $Sender->Render();
+   }
    
+   /**
+    * Modify UnreadCommentCount to account for DateAllViewed
+    *
+    * Required in DiscussionModel->Get() just before the return:
+    * $this->EventArguments['Data'] = $Data;
+    * FireEvent('AfterAddColumns') ;
+    * @link http://vanillaforums.org/discussion/13227
+    */
+   function DiscussionModel_AfterAddColumns_Handler(&$Sender) {
+      if (!C('Plugins.AllViewed.Enabled'))
+         return;
+      
+      // Only for members
+      $Session = Gdn::Session();
+      if(!$Session->IsValid())
+         return;
+         
+      // Get user's DateAllViewed
+      
+      // Recalculate New count with user's DateAllViewed   
+      $Sender->Data = GetValue('Data', $Sender->EventArguments, '');
+      
+   }
+   
+   /**
+    * Update user's AllViewed datetime.
+    */
+   function UserModel_UpdateAllViewed_Create(&$Sender) {
+      if (!C('Plugins.AllViewed.Enabled'))
+         return;
+      
+      // Only for members
+      $Session = Gdn::Session();
+      if(!$Session->IsValid())
+         return;
+      
+      $UserID = $Session->User->UserID; // Can only activate on yourself
+      
+      // Validity check (in case get passed UserID from elsewhere some day)
+      $UserID = (int) $UserID;
+      if (!$UserID) {
+         throw new Exception('A valid UserId is required.');
+      }
+
+      $Sender->SQL->Update('User')
+         ->Set('DateAllViewed', Gdn_Format::ToDateTime());
+
+      $Sender->SQL->Where('UserID', $UserID)->Put();
+      
+      // Set in current session?
+      
+   }
    
    /**
     * 1-Time on Enable
@@ -27,7 +90,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
    public function Setup() {
       $Structure = Gdn::Structure();
       $Structure->Table('User')
-         ->Column('AllViewed', 'datetime')
+         ->Column('DateAllViewed', 'datetime')
          ->Set();
 
       SaveToConfig('Plugins.AllViewed.Enabled', TRUE);

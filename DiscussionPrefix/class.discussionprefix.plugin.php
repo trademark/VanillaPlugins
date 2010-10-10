@@ -19,7 +19,7 @@ $PluginInfo['DiscussionPrefix'] = array(
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://www.tmprod.com/web-development/vanilla.php',
-   'License' => 'GNU GPLv3'
+   'License' => 'GNU GPLv2'
 );
 
 class DiscussionPrefixPlugin extends Gdn_Plugin {

@@ -18,7 +18,7 @@ $PluginInfo['CreditTransactions'] = array(
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://tmprod.com',
-   'License' => 'GNU GPLv3'
+   'License' => 'GNU GPLv2'
 );
 
 /** @todo Make these options in the Dashboard */
