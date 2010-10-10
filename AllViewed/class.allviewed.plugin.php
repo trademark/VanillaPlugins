@@ -4,13 +4,9 @@
 // Define the plugin:
 $PluginInfo['AllVieiwed'] = array(
    'Name' => 'AllViewed',
-   'Description' => '',
+   'Description' => 'Allows users to mark all discussions as viewed.',
    'Version' => '1.0a',
-   'RequiredApplications' => FALSE,
-   'RequiredTheme' => FALSE, 
-   'RequiredPlugins' => FALSE,
-   'HasLocale' => FALSE,
-   'RegisterPermissions' => array('General.Discussions.ViewAll'),
+   //'RegisterPermissions' => array('General.Discussions.AllVieiwed'),
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://www.tmprod.com/web-development/vanilla.php',
@@ -35,24 +31,29 @@ class AllVieiwedPlugin extends Gdn_Plugin {
     * Modify UnreadCommentCount to account for DateAllViewed
     *
     * Required in DiscussionModel->Get() just before the return:
-    * $this->EventArguments['Data'] = $Data;
-    * FireEvent('AfterAddColumns') ;
+    *    $this->EventArguments['Data'] = $Data;
+    *    FireEvent('AfterAddColumns');
     * @link http://vanillaforums.org/discussion/13227
     */
    function DiscussionModel_AfterAddColumns_Handler(&$Sender) {
       if (!C('Plugins.AllViewed.Enabled'))
          return;
-      
       // Only for members
       $Session = Gdn::Session();
       if(!$Session->IsValid())
          return;
-         
-      // Get user's DateAllViewed
-      
+
       // Recalculate New count with user's DateAllViewed   
       $Sender->Data = GetValue('Data', $Sender->EventArguments, '');
-      
+      $Result = &$Sender->Data->Result();
+		foreach($Result as &$Discussion) {
+			if(Gdn_Format::ToTimestamp($Discussion->DateLastComment) <= $Session->User->DateAllViewed) {
+				$Discussion->CountUnreadComments = 0; // Default to none
+				if($Discussion->CountCommentWatch) {
+					$Discussion->CountUnreadComments = $Discussion->CountComments - $Discussion->CountCommentWatch;
+				}
+			}
+		}
    }
    
    /**
@@ -61,7 +62,6 @@ class AllVieiwedPlugin extends Gdn_Plugin {
    function UserModel_UpdateAllViewed_Create(&$Sender) {
       if (!C('Plugins.AllViewed.Enabled'))
          return;
-      
       // Only for members
       $Session = Gdn::Session();
       if(!$Session->IsValid())
@@ -74,14 +74,19 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       if (!$UserID) {
          throw new Exception('A valid UserId is required.');
       }
-
+      
+      // Update User
       $Sender->SQL->Update('User')
          ->Set('DateAllViewed', Gdn_Format::ToDateTime());
-
       $Sender->SQL->Where('UserID', $UserID)->Put();
       
-      // Set in current session?
+      // Update CountComments
+      $Sender->SQL->Update('UserDiscussion')
+         ->Set('CountComments', 0); // Zero = won't count (kinda hacky but definitely simpler than recounting them all)
+      $Sender->SQL->Where('UserID', $UserID)->Put();
       
+      // Set in current session
+      $Session->User->DateAllViewed = Gdn_Format::ToDateTime();
    }
    
    /**
