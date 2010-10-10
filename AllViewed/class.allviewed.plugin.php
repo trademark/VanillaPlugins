@@ -30,9 +30,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       $UserModel = Gdn::UserModel();
       $UserModel->UpdateAllViewed();
       
-      $Sender->RedirectUrl = Url('discussions');
-      $Sender->StatusMessage = T('All discussed marked as viewed.');
-      $Sender->Render();
+      Redirect('discussions');
    }
    
    /**
@@ -48,12 +46,12 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       // Only for members
       $Session = Gdn::Session();
       if(!$Session->IsValid()) return;
-
+      
       // Recalculate New count with user's DateAllViewed   
       $Sender->Data = GetValue('Data', $Sender->EventArguments, '');
       $Result = &$Sender->Data->Result();
 		foreach($Result as &$Discussion) {
-			if(Gdn_Format::ToTimestamp($Discussion->DateLastComment) <= $Session->User->DateAllViewed) {
+			if(Gdn_Format::ToTimestamp($Discussion->DateLastComment) <= Gdn_Format::ToTimestamp($Session->User->DateAllViewed)) {
 				$Discussion->CountUnreadComments = 0; // Default to none
 				if($Discussion->CountCommentWatch) {
 					$Discussion->CountUnreadComments = $Discussion->CountComments - $Discussion->CountCommentWatch;
@@ -72,7 +70,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       if(!$Session->IsValid()) return;
       
       $UserID = $Session->User->UserID; // Can only activate on yourself
-      
+            
       // Validity check (in case get passed UserID from elsewhere some day)
       $UserID = (int) $UserID;
       if (!$UserID) {
@@ -98,8 +96,12 @@ class AllVieiwedPlugin extends Gdn_Plugin {
     */
    public function Setup() {
       $this->Structure();
+      SaveToConfig('Plugins.AllViewed.Enabled', TRUE);
    }
    
+   /**
+    * Database changes
+    */
    public function Structure() {
       $Structure = Gdn::Structure();
       $Structure->Table('User')
@@ -107,11 +109,10 @@ class AllVieiwedPlugin extends Gdn_Plugin {
          ->Set();
    }
    
-   protected function _Enable() {
-      SaveToConfig('Plugins.AllViewed.Enabled', TRUE);
-   }
-   
-   protected function _Disable() {
+   /**
+    * 1-Time on Disable
+    */
+   public function OnDisable() {
       RemoveFromConfig('Plugins.AllViewed.Enabled');
    }
 }
