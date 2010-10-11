@@ -50,9 +50,9 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       $Result = &$Sender->Data->Result();
 		foreach($Result as &$Discussion) {
 			if(Gdn_Format::ToTimestamp($Discussion->DateLastComment) <= Gdn_Format::ToTimestamp($Session->User->DateAllViewed)) {
-				$Discussion->CountUnreadComments = 0; // 
+				$Discussion->CountUnreadComments = 0; // Covered by AllViewed
 			}
-			elseif($Discussion->CountCommentWatch == 0) {
+			elseif($Discussion->CountCommentWatch == 0) { // AllViewed used, but new comments since then
 			   $Discussion->CountCommentWatch = -1; // hack around "incomplete comment count" logic in WriteDiscussion
 			   $Discussion->CountUnreadComments = $Discussion->CountComments;
 			}
@@ -70,18 +70,18 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       
       $UserID = $Session->User->UserID; // Can only activate on yourself
             
-      // Validity check (in case get passed UserID from elsewhere some day)
+      // Validity check (in case UserID passed from elsewhere some day)
       $UserID = (int) $UserID;
       if (!$UserID) {
          throw new Exception('A valid UserId is required.');
       }
       
-      // Update User
+      // Update User timestamp
       $Sender->SQL->Update('User')
          ->Set('DateAllViewed', Gdn_Format::ToDateTime());
       $Sender->SQL->Where('UserID', $UserID)->Put();
       
-      // Update CountComments
+      // Update CountComments = 0
       $Sender->SQL->Update('UserDiscussion')
          ->Set('CountComments', 0); // Hack to avoid massive update query
       $Sender->SQL->Where('UserID', $UserID)->Put();
