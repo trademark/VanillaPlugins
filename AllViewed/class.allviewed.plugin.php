@@ -2,7 +2,7 @@
 // Copyright Trademark Productions 2010
 
 $PluginInfo['AllViewed'] = array(
-   'Name' => 'AllViewed',
+   'Name' => 'Mark All Viewed',
    'Description' => 'Allows users to mark all discussions as viewed.',
    'Version' => '1.0b',
    'Author' => "Matt Lincoln Russell",
