@@ -19,7 +19,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       // Add menu items.
       $Session = Gdn::Session();
       if ($Sender->Menu && $Session->IsValid()) {
-         $Sender->Menu->AddLink('AllViewed', T('Mark All Read'), '/discussions/markallviewed');
+         $Sender->Menu->AddLink('AllViewed', T('Mark All Viewed'), '/discussions/markallviewed');
       }
    }
    
@@ -52,10 +52,11 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       $Result = &$Sender->Data->Result();
 		foreach($Result as &$Discussion) {
 			if(Gdn_Format::ToTimestamp($Discussion->DateLastComment) <= Gdn_Format::ToTimestamp($Session->User->DateAllViewed)) {
-				$Discussion->CountUnreadComments = 0; // Default to none
-				if($Discussion->CountCommentWatch) {
-					$Discussion->CountUnreadComments = $Discussion->CountComments - $Discussion->CountCommentWatch;
-				}
+				$Discussion->CountUnreadComments = 0; // 
+			}
+			elseif($Discussion->CountCommentWatch == 0) {
+			   $Discussion->CountCommentWatch = -1; // hack around "incomplete comment count" logic in WriteDiscussion
+			   $Discussion->CountUnreadComments = $Discussion->CountComments;
 			}
 		}
    }
@@ -84,7 +85,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
       
       // Update CountComments
       $Sender->SQL->Update('UserDiscussion')
-         ->Set('CountComments', 0); // Zero = won't count (kinda hacky but definitely simpler than recounting them all)
+         ->Set('CountComments', 0); // Hack to avoid massive update query
       $Sender->SQL->Where('UserID', $UserID)->Put();
       
       // Set in current session
