@@ -11,3 +11,18 @@ Normally viewing the discussion will put it back on a "X New"-style counter.
 
 This behavior is to circumvent potential problems with massive updates to the
 UserDiscussion table when "Mark All Viewed" is clicked.
+
+To make compatible with 2.0.11 or earlier, open class.discussionmodel.php 
+then go to the Get() method and find this:
+
+   $this->AddDiscussionColumns($Data);
+   
+   return $Data;
+
+and replace it with:
+
+   $this->AddDiscussionColumns($Data);
+   $this->EventArguments['Data'] = $Data;
+   $this->FireEvent('AfterAddColumns');
+   
+   return $Data;
