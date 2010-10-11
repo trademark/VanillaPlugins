@@ -14,9 +14,10 @@ $PluginInfo['AllViewed'] = array(
 class AllVieiwedPlugin extends Gdn_Plugin {
    
    public function Base_Render_Before(&$Sender) {
-      // Add menu items.
+      // Add "Mark All Viewed" to menu
       $Session = Gdn::Session();
       if ($Sender->Menu && $Session->IsValid()) {
+         // Comment out this next line if you want to put the link somewhere else manually
          $Sender->Menu->AddLink('AllViewed', T('Mark All Viewed'), '/discussions/markallviewed');
       }
    }
