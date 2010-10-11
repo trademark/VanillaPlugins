@@ -1,3 +1,5 @@
+Requires Vanilla 2.0.12
+
 AllViewed allows members to mark all discussions as viewed by clicking "Mark All Viewed" 
 in the main nav (path: /discussions/markallviewed)
 

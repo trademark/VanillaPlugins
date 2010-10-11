@@ -1,12 +1,10 @@
 <?php if (!defined('APPLICATION')) exit();
 // Copyright Trademark Productions 2010
 
-// Define the plugin:
 $PluginInfo['AllViewed'] = array(
    'Name' => 'AllViewed',
    'Description' => 'Allows users to mark all discussions as viewed.',
    'Version' => '1.0b',
-   //'RegisterPermissions' => array('General.Discussions.AllVieiwed'),
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://www.tmprod.com/web-development/vanilla.php',
@@ -29,7 +27,6 @@ class AllVieiwedPlugin extends Gdn_Plugin {
    function DiscussionsController_MarkAllViewed_Create(&$Sender) {
       $UserModel = Gdn::UserModel();
       $UserModel->UpdateAllViewed();
-      
       Redirect('discussions');
    }
    
