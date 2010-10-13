@@ -4,12 +4,8 @@
 // Define the plugin:
 $PluginInfo['DiscussionPrefix'] = array(
    'Name' => 'DiscussionPrefix',
-   'Description' => '',
+   'Description' => 'Allows you to mark certain discussions with a prefix.',
    'Version' => '1.0a',
-   'RequiredApplications' => FALSE,
-   'RequiredTheme' => FALSE, 
-   'RequiredPlugins' => FALSE,
-   'HasLocale' => FALSE,
    'RegisterPermissions' => array(
       'Plugins.DiscussionPrefix.Prefix.Add',
       'Plugins.DiscussionPrefix.Prefix.Remove',
@@ -44,11 +40,12 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
     
     /**
     * Creates a virtual Index method for the DiscussionPrefix controller
-    * Shows the settings for the plugin
+    *
+    * Shows the settings for the plugin:
+    * - Prefix to show before discussion title
+    * - What the checkbox label should be
     */
     public function Controller_Index(&$Sender) {  
-      //$Sender->AddCssFile($this->GetWebResource('css/payment.css'));
-      //$Sender->AddJsFile('/js/library/jquery.gardencheckboxgrid.js');
       $Sender->AddCssFile('admin.css');
       $Sender->AddSideMenu('plugin/discussionprefix');
 
@@ -81,7 +78,21 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
     * 1-Time on Enable
     */
    public function Setup() {
+      $this->Structure();
       SaveToConfig('Plugins.DiscussionPrefix.Enabled', TRUE);
+   }
+   
+   /**
+    * Database structure changes
+    *
+    * 'Prefixed' column will be bool (1 or 0) to determine 
+    * whether discussion gets the prefix
+    */
+   public function Structure() {
+      $Structure = Gdn::Structure();
+      $Structure->Table('Discussion')
+         ->Column('Prefixed', 'tinyint', 0)
+         ->Set();
    }
    
    /**
