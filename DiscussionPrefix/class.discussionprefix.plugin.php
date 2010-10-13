@@ -39,6 +39,18 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
     }
     
     /**
+     * Insert checkbox on Discussion Post page (vanilla/views/post/discussion.php)
+     */
+    public function PostController_BeforeFormButtons_Handler(&$Sender) {
+      $Session = Gdn::Session();
+      $Options = '';
+      if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Add'))
+         $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.AuthorizeNet.Label'), array('value' => '1')).'</li>';
+      if($Options != '')
+         echo '<ul class="PostOptions">' . $Options .'</ul>';
+    }
+    
+    /**
     * Creates a virtual Index method for the DiscussionPrefix controller
     *
     * Shows the settings for the plugin:
@@ -91,7 +103,7 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
    public function Structure() {
       $Structure = Gdn::Structure();
       $Structure->Table('Discussion')
-         ->Column('Prefixed', 'tinyint', 0)
+         ->Column('Prefixed', 'tinyint(1)', 0)
          ->Set();
    }
    
