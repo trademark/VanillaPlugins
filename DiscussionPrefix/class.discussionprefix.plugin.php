@@ -7,8 +7,7 @@ $PluginInfo['DiscussionPrefix'] = array(
    'Description' => 'Allows you to mark certain discussions with a prefix.',
    'Version' => '1.0a',
    'RegisterPermissions' => array(
-      'Plugins.DiscussionPrefix.Prefix.Add',
-      'Plugins.DiscussionPrefix.Prefix.Remove',
+      'Plugins.DiscussionPrefix.Prefix.Use',
       'Plugins.DiscussionPrefix.Prefix.Manage'),
    'SettingsUrl' => '/plugin/discussionprefix',
    'SettingsPermission' => 'Plugins.DiscussionPrefix.Prefix.Manage',
@@ -44,7 +43,7 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
    public function PostController_BeforeFormButtons_Handler(&$Sender) {
       $Session = Gdn::Session();
       $Options = '';
-      if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Add'))
+      if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Use'))
          $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.AuthorizeNet.Label'), array('value' => '1')).'</li>';
       if($Options != '')
          echo '<ul class="PostOptions">' . $Options .'</ul>';
