@@ -38,26 +38,44 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
       $this->Dispatch($Sender, $Sender->RequestArgs);
     }
     
-    /**
-     * Insert checkbox on Discussion Post page (vanilla/views/post/discussion.php)
-     */
-    public function PostController_BeforeFormButtons_Handler(&$Sender) {
+   /**
+    * Insert checkbox on Discussion Post page (vanilla/views/post/discussion.php)
+    */
+   public function PostController_BeforeFormButtons_Handler(&$Sender) {
       $Session = Gdn::Session();
       $Options = '';
       if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Add'))
          $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.AuthorizeNet.Label'), array('value' => '1')).'</li>';
       if($Options != '')
          echo '<ul class="PostOptions">' . $Options .'</ul>';
-    }
+   }
+   
+   /**
+    * Add prefix to discussion name in single discussion view (vanilla/controllers/class.discussioncontroller.php)
+    */
+   public function DiscussionController_BeforeDiscussionRender_Handler(&$Sender) {
+      if($Sender->Discussion->Prefixed == 1)
+         $Sender->Discussion->Name = C('Plugins.AuthorizeNet.Prefix').$Sender->Discussion->Name;
+   }
+   
+   /**
+    * Add prefix to discussion name - glom onto ALL discussionscontroller methods
+    */
+   public function DiscussionsController_Render_Before(&$Sender) {
+      foreach($Sender->DiscussionData->Result() as &$Discussion) {
+         if($Discussion->Prefixed == 1)
+            $Discussion->Name = C('Plugins.AuthorizeNet.Prefix').$Discussion->Name;
+      }
+   }
     
-    /**
+   /**
     * Creates a virtual Index method for the DiscussionPrefix controller
     *
     * Shows the settings for the plugin:
     * - Prefix to show before discussion title
     * - What the checkbox label should be
     */
-    public function Controller_Index(&$Sender) {  
+   public function Controller_Index(&$Sender) {  
       $Sender->AddCssFile('admin.css');
       $Sender->AddSideMenu('plugin/discussionprefix');
 
