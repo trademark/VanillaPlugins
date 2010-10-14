@@ -24,7 +24,7 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
     */
    public function Base_GetAppSettingsMenuItems_Handler(&$Sender) {
       $Menu = &$Sender->EventArguments['SideMenu'];
-      $Menu->AddLink('Forum Settings', 'Discusion Prefix', 'plugin/discussionprefix', 'Plugins.DiscussionPrefix.Prefix.Manage');
+      $Menu->AddLink('Forum', 'Discussion Prefix', 'plugin/discussionprefix', 'Plugins.DiscussionPrefix.Prefix.Manage');
    }
    
    /**
@@ -35,7 +35,7 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
       $Sender->Title('Discussion Prefix');
       $Sender->Form = new Gdn_Form();
       $this->Dispatch($Sender, $Sender->RequestArgs);
-    }
+   }
     
    /**
     * Insert checkbox on Discussion Post page (vanilla/views/post/discussion.php)
@@ -44,7 +44,7 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
       $Session = Gdn::Session();
       $Options = '';
       if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Use'))
-         $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.AuthorizeNet.Label'), array('value' => '1')).'</li>';
+         $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.DiscussionPrefix.Label'), array('value' => '1')).'</li>';
       if($Options != '')
          echo '<ul class="PostOptions">' . $Options .'</ul>';
    }
@@ -54,16 +54,16 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
     */
    public function DiscussionController_BeforeDiscussionRender_Handler(&$Sender) {
       if($Sender->Discussion->Prefixed == 1)
-         $Sender->Discussion->Name = C('Plugins.AuthorizeNet.Prefix').$Sender->Discussion->Name;
+         $Sender->Discussion->Name = C('Plugins.DiscussionPrefix.Prefix').' '.$Sender->Discussion->Name;
    }
    
    /**
     * Add prefix to discussion name - glom onto ALL discussionscontroller methods
     */
    public function DiscussionsController_Render_Before(&$Sender) {
-      foreach($Sender->DiscussionData->Result() as &$Discussion) {
+      foreach($Sender->Discussions as &$Discussion) {
          if($Discussion->Prefixed == 1)
-            $Discussion->Name = C('Plugins.AuthorizeNet.Prefix').$Discussion->Name;
+            $Discussion->Name = C('Plugins.DiscussionPrefix.Prefix').' '.$Discussion->Name;
       }
    }
     
@@ -81,8 +81,8 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
       $Validation = new Gdn_Validation();
       $ConfigurationModel = new Gdn_ConfigurationModel($Validation);
       $ConfigurationModel->SetField(array(
-         'Plugins.AuthorizeNet.Prefix',
-         'Plugins.AuthorizeNet.Label'
+         'Plugins.DiscussionPrefix.Prefix',
+         'Plugins.DiscussionPrefix.Label'
       ));
       
       // Set the model on the form.
