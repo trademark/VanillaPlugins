@@ -73,34 +73,27 @@ class AutoParagraphPlugin extends Gdn_Plugin {
    }
    
    /**
-    * 
+    * Cleanup jankiness from the extra set of <p> tags in the default template.
     */
    public function StripWrapperParagraph($Body) {
       if(preg_match('/^<p>/', $Body))
          $Body = substr($Body, 3);
-      if(preg_match('/<\/p>$/', $Sender->Discussion->Body))
-         $Body = substr($Body, 0, -4);
-      $Body = str_replace('</p><br />', '</p>', $Body);
+      else # Immediately close opening tag because we start with something other than a <p>
+         $Body = '</p>'.$Body;
+      if(preg_match('/<\/p>$/', $Body))
+         $Body = substr($Body, 0, -5);
+      else # Close with opening <p> tag to match the one in the template
+         $Body = $Body.'<p>';
       return $Body;
    }
    
    /**
-    * 
-    */
-   public function DiscussionController_BeforeDiscussionRender_Handler(&$Sender) {
-      $Sender->Discussion->Body = $this->AutoParagraph($Sender->Discussion->Body, false);
-      $Sender->Discussion->Body = $this->StripWrapperParagraph($Sender->Discussion->Body);
-   }
-   
-   /**
-    * 
+    * Grab each comment (including first) at last moment before its rendered and reformat it
     */
    public function DiscussionController_AfterCommentFormat_Handler(&$Sender) {
-      //print_r($Sender);
-      foreach($Sender->Data['Comments'] as &$Comment) {
-         $Comment->Body = $this->AutoParagraph($Comment->Body, false);
-         $Comment->Body = $this->StripWrapperParagraph($Comment->Body);
-      }
+      $Sender->EventArguments['Object']->FormatBody = $this->AutoParagraph($Sender->EventArguments['Object']->FormatBody, false);
+      # Comment out next line if you edit your template to not wrap comments in <p> tags
+      $Sender->EventArguments['Object']->FormatBody = $this->StripWrapperParagraph($Sender->EventArguments['Object']->FormatBody);
    }
    
    /**
