@@ -5,7 +5,7 @@
 $PluginInfo['AutoParagraph'] = array(
    'Name' => 'AutoParagraph',
    'Description' => 'Automatically creates nice paragraph tags in comments.',
-   'Version' => '1.0a',
+   'Version' => '1.0',
    'Author' => "Matt Lincoln Russell",
    'AuthorEmail' => 'lincolnwebs@gmail.com',
    'AuthorUrl' => 'http://www.tmprod.com/web-development/vanilla.php',
@@ -17,13 +17,11 @@ class AutoParagraphPlugin extends Gdn_Plugin {
    /**
     * Replaces double line-breaks with paragraph elements.
     *
-    * This method (and its doc) is from Wordpress 3.0.1; hat's off to them.
+    * This method (and its doc) is from Wordpress 3.0.1; hat's off to them. -MLR
     * A group of regex replaces used to identify text formatted with newlines and
     * replace double line-breaks with HTML paragraph tags. The remaining
     * line-breaks after conversion become <<br />> tags, unless $br is set to '0'
     * or 'false'.
-    *
-    * @since 0.71
     *
     * @param string $pee The text which has to be formatted.
     * @param int|bool $br Optional. If set, this will convert all remaining line-breaks after paragraphing. Default true.
