@@ -12,6 +12,44 @@ $PluginInfo['AutoParagraph'] = array(
    'License' => 'GNU GPLv2'
 );
 
+/**
+ * Accepts matches array from preg_replace_callback in wpautop() or a string.
+ *
+ * Ensures that the contents of a <<pre>>...<</pre>> HTML block are not
+ * converted into paragraphs or line-breaks.
+ *
+ * @param array|string $matches The array or string
+ * @return string The pre block without paragraph/line-break conversion.
+ */
+function AutoParagraphCleanPre($matches) {
+	if ( is_array($matches) )
+		$text = $matches[1] . $matches[2] . "</pre>";
+	else
+		$text = $matches;
+
+	$text = str_replace('<br />', "\n", $text);
+	$text = str_replace('<p>', "\n", $text);
+	$text = str_replace('</p>', '', $text);
+
+	return $text;
+}
+
+/**
+ * @see AutoParagraphCleanPre
+ */
+function AutoParagraphCleanCode($matches) {
+	if ( is_array($matches) )
+		$text = $matches[1] . $matches[2] . "</code>";
+	else
+		$text = $matches;
+
+	$text = str_replace('<br />', "\n", $text);
+	$text = str_replace('<p>', "\n", $text);
+	$text = str_replace('</p>', '', $text);
+
+	return $text;
+}
+
 class AutoParagraphPlugin extends Gdn_Plugin {
 
    /**
@@ -34,7 +72,7 @@ class AutoParagraphPlugin extends Gdn_Plugin {
    	$pee = $pee . "\n"; // just to make things a little easier, pad the end
    	$pee = preg_replace('|<br />\s*<br />|', "\n\n", $pee);
    	// Space things out a little
-   	$allblocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|option|form|map|area|blockquote|address|math|style|input|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|menu|summary)';
+   	$allblocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|option|form|map|area|blockquote|address|math|style|input|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|menu|summary|code)';
    	$pee = preg_replace('!(<' . $allblocks . '[^>]*>)!', "\n$1", $pee);
    	$pee = preg_replace('!(</' . $allblocks . '>)!', "$1\n\n", $pee);
    	$pee = str_replace(array("\r\n", "\r"), "\n", $pee); // cross-platform newlines
@@ -62,9 +100,11 @@ class AutoParagraphPlugin extends Gdn_Plugin {
    		$pee = str_replace('<WPPreserveNewline />', "\n", $pee);
    	}
    	$pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*<br />!', "$1", $pee);
-   	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
+   	$pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol|code)[^>]*>)!', '$1', $pee);
    	if (strpos($pee, '<pre') !== false)
-   		$pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', 'clean_pre', $pee );
+   		$pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', 'AutoParagraphCleanPre', $pee );
+      if (strpos($pee, '<code') !== false)
+   		$pee = preg_replace_callback('!(<code[^>]*>)(.*?)</code>!is', 'AutoParagraphCleanCode', $pee );
    	$pee = preg_replace( "|\n</p>$|", '</p>', $pee );
    
    	return $pee;
