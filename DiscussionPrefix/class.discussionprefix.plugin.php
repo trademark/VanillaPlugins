@@ -58,13 +58,11 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
    }
    
    /**
-    * Add prefix to discussion name - glom onto ALL discussionscontroller methods
+    * Add prefix to each discussion name in list view
     */
-   public function DiscussionsController_Render_Before(&$Sender) {
-      foreach($Sender->Discussions as &$Discussion) {
-         if($Discussion->Prefixed == 1)
-            $Discussion->Name = C('Plugins.DiscussionPrefix.Prefix').' '.$Discussion->Name;
-      }
+   public function DiscussionsController_BeforeDiscussionName_Handler(&$Sender) {
+      if($Sender->EventArguments['Discussion']->Prefixed == 1)
+         $Sender->EventArguments['Discussion']->Name = C('Plugins.DiscussionPrefix.Prefix').' '.$Sender->EventArguments['Discussion']->Name;
    }
     
    /**
