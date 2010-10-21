@@ -40,13 +40,10 @@ class DiscussionPrefixPlugin extends Gdn_Plugin {
    /**
     * Insert checkbox on Discussion Post page (vanilla/views/post/discussion.php)
     */
-   public function PostController_BeforeFormButtons_Handler(&$Sender) {
+   public function PostController_DiscussionFormOptions_Handler(&$Sender) {
       $Session = Gdn::Session();
-      $Options = '';
       if ($Session->CheckPermission('Plugins.DiscussionPrefix.Prefix.Use'))
-         $Options .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.DiscussionPrefix.Label'), array('value' => '1')).'</li>';
-      if($Options != '')
-         echo '<ul class="PostOptions">' . $Options .'</ul>';
+         $Sender->EventArguments['Options'] .= '<li>'.$Sender->Form->CheckBox('Prefixed', C('Plugins.DiscussionPrefix.Label'), array('value' => '1')).'</li>';
    }
    
    /**
