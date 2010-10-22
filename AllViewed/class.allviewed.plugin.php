@@ -104,7 +104,7 @@ class AllVieiwedPlugin extends Gdn_Plugin {
    public function Structure() {
       $Structure = Gdn::Structure();
       $Structure->Table('User')
-         ->Column('DateAllViewed', 'datetime')
+         ->Column('DateAllViewed', 'datetime', NULL)
          ->Set();
    }
    
