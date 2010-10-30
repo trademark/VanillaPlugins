@@ -6,6 +6,7 @@ $PluginInfo['DiscussionPrefix'] = array(
    'Name' => 'DiscussionPrefix',
    'Description' => 'Allows you to mark certain discussions with a prefix.',
    'Version' => '1.1',
+   'RequiredApplications' => array('Vanilla' => '2.0.14'),
    'RegisterPermissions' => array(
       'Vanilla.DiscussionPrefix.Use',
       'Vanilla.DiscussionPrefix.Manage'),
