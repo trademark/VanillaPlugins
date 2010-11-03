@@ -11,7 +11,7 @@ $PluginInfo['AllViewed'] = array(
    'License' => 'GNU GPLv2'
 );
 
-class AllVieiwedPlugin extends Gdn_Plugin {
+class AllViewedPlugin extends Gdn_Plugin {
    
    public function Base_Render_Before(&$Sender) {
       // Add "Mark All Viewed" to menu
